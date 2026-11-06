@@ -21,6 +21,7 @@ package filesystem
 
 import (
 	"fmt"
+	"runtime"
 	"syscall"
 
 	"github.com/elastic/beats/v7/pkg/opt"
@@ -37,9 +38,17 @@ func (fs *FSStat) GetUsage() error {
 	blockSize := uint64(stat.Bsize) //nolint:gosec,nolintlint // G115 — statfs block size is non-negative
 	fs.Total = opt.UintWith(stat.Blocks).MultUint64OrNone(blockSize)
 	fs.Free = opt.UintWith(stat.Bfree).MultUint64OrNone(blockSize)
-	fs.Avail = opt.UintWith(stat.Bavail).MultUint64OrNone(blockSize)
+	if runtime.GOOS == "freebsd" {
+		fs.Avail = opt.UintWith(uint64(stat.Bavail)).MultUint64OrNone(blockSize)
+	} else {
+		fs.Avail = opt.UintWith(stat.Bavail).MultUint64OrNone(blockSize)
+	}
 	fs.Files = opt.UintWith(stat.Files)
-	fs.FreeFiles = opt.UintWith(stat.Ffree)
+	if runtime.GOOS == "freebsd" {
+		fs.FreeFiles = opt.UintWith(uint64(stat.Ffree))
+	} else {
+		fs.FreeFiles = opt.UintWith(stat.Ffree)
+	}
 
 	fs.fillMetrics()
 

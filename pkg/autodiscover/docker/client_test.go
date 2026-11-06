@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//go:build integration && (linux || darwin || windows)
+//go:build integration && (linux || darwin || windows || freebsd)
 
 package docker
 

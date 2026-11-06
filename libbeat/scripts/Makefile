@@ -47,7 +47,11 @@ GOFILES = $(shell find . -type f -name '*.go' 2>/dev/null)
 GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "*/vendor/*" 2>/dev/null)
 GOFILES_ALL = $(GOFILES) $(shell find $(ES_BEATS) -type f -name '*.go' 2>/dev/null)
 GOPACKAGES_STRESSTESTS=$(shell find . -type d \( -name "stress" \) 2>/dev/null)
-SHELL=bash
+ifeq ($(shell uname -s),FreeBSD)
+	SHELL=sh
+else
+	SHELL=bash
+endif
 ES_HOST?=elasticsearch
 ES_PORT?=9200
 ES_USER?=beats

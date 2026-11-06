@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//go:build linux || darwin || windows
+//go:build linux || darwin || windows || freebsd
 
 package kubernetes
 
@@ -52,7 +52,7 @@ type Config struct {
 	// Unique identifies if this provider enables its templates only when it is elected as leader in a k8s cluster
 	Unique      bool   `config:"unique"`
 	LeaderLease string `config:"leader_lease"`
-	//Parameters to configure election process
+	// Parameters to configure election process
 	LeaseDuration time.Duration `config:"leader_leaseduration"`
 	RenewDeadline time.Duration `config:"leader_renewdeadline"`
 	RetryPeriod   time.Duration `config:"leader_retryperiod"`
