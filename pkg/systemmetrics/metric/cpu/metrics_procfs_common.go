@@ -23,6 +23,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -31,7 +32,11 @@ import (
 func Get(m *Monitor) (CPUMetrics, error) {
 	procfs := m.Hostfs
 
-	path := procfs.ResolveHostFS("/proc/stat")
+	if runtime.GOOS == "freebsd" {
+		path := procfs.ResolveHostFS("/compat/linux/proc/stat")
+	} else {
+		path := procfs.ResolveHostFS("/proc/stat")
+	}
 	fd, err := os.Open(path)
 	defer func() {
 		_ = fd.Close()
@@ -45,7 +50,11 @@ func Get(m *Monitor) (CPUMetrics, error) {
 		return CPUMetrics{}, fmt.Errorf("scanning stat file: %w", err)
 	}
 
-	cpuInfoPath := procfs.ResolveHostFS("/proc/cpuinfo")
+	if runtime.GOOS == "freebsd" {
+		cpuInfoPath := procfs.ResolveHostFS("/compat/linux/proc/cpuinfo")
+	} else {
+		cpuInfoPath := procfs.ResolveHostFS("/proc/cpuinfo")
+	}
 	cpuInfoFd, err := os.Open(cpuInfoPath)
 	if err != nil {
 		return CPUMetrics{}, fmt.Errorf("opening '%s': %w", cpuInfoPath, err)
